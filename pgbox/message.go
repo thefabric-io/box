@@ -50,5 +50,9 @@ func (m *PostgresMessage) Payload() json.RawMessage {
 }
 
 func (m *PostgresMessage) Metadata() json.RawMessage {
+	if !m.Metadata_.Valid {
+		return nil
+	}
+
 	return json.RawMessage(m.Metadata_.String)
 }
