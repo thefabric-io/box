@@ -11,24 +11,26 @@ import (
 )
 
 type fifoSubscriber struct {
-	transactional  transactional.Transactional
-	name           string
-	box            Box
-	handlers       map[string]Handler
-	handlersLock   sync.RWMutex
-	processedCount int
-	batchSize      int
-	waitTime       time.Duration
+	transactional      transactional.Transactional
+	name               string
+	box                Box
+	handlers           map[string]Handler
+	handlersLock       sync.RWMutex
+	processedCount     int
+	batchSize          int
+	waitTime           time.Duration
+	waitTimeIfMessages time.Duration
 }
 
-func NewFIFOSubscriber(tx transactional.Transactional, name string, box Box, batchSize int, waitTime time.Duration) Subscriber {
+func NewFIFOSubscriber(tx transactional.Transactional, name string, box Box, batchSize int, waitTime time.Duration, waitTimeIfMessages time.Duration) Subscriber {
 	return &fifoSubscriber{
-		box:           box,
-		name:          name,
-		transactional: tx,
-		handlers:      make(map[string]Handler),
-		batchSize:     batchSize,
-		waitTime:      waitTime,
+		box:                box,
+		name:               name,
+		transactional:      tx,
+		handlers:           make(map[string]Handler),
+		batchSize:          batchSize,
+		waitTime:           waitTime,
+		waitTimeIfMessages: waitTimeIfMessages,
 	}
 }
 
@@ -104,6 +106,8 @@ func (es *fifoSubscriber) Start(ctx context.Context) error {
 		// If no messages are retrieved, wait for the specified duration
 		if messageRetrieved == 0 {
 			time.Sleep(es.waitTime)
+		} else {
+			time.Sleep(es.waitTimeIfMessages)
 		}
 	}
 }
