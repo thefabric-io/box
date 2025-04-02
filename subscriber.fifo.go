@@ -100,6 +100,8 @@ func (es *fifoSubscriber) Start(ctx context.Context) error {
 		if err := tx.Commit(); err != nil {
 			fieldslog.Error(es, "error committing transaction", err)
 
+			es.wait(err.Error())
+
 			continue
 		}
 

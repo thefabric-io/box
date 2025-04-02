@@ -7,7 +7,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/thefabric-io/fieldslog v0.0.0-20240115020354-259bf21c8e73
 	github.com/thefabric-io/sqlvalues v0.0.0-20240115015328-309b5f4cd89b
-	github.com/thefabric-io/transactional v0.0.0-20240115014503-430513e45120
+	github.com/thefabric-io/transactional v1.1.0
 )
 
 require (

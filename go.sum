@@ -21,8 +21,8 @@ github.com/thefabric-io/fieldslog v0.0.0-20240115020354-259bf21c8e73 h1:3QA7Qlhy
 github.com/thefabric-io/fieldslog v0.0.0-20240115020354-259bf21c8e73/go.mod h1:SiOr5LdfNoycVS0SHEg/UvDv6NDt4EaDwmAq+QH6zww=
 github.com/thefabric-io/sqlvalues v0.0.0-20240115015328-309b5f4cd89b h1:s19CMRgH/tzeNHLJxrIYlExB9xDimxwXJzhKt0NocKs=
 github.com/thefabric-io/sqlvalues v0.0.0-20240115015328-309b5f4cd89b/go.mod h1:ew+4GIpcjPcM8p1ZTzAy57mU0yjNiDm4wiczEt5yJ1g=
-github.com/thefabric-io/transactional v0.0.0-20240115014503-430513e45120 h1:BLx/rXCKF4g9Zmocfz7usmlGpTopliE5naZDrwnKwrk=
-github.com/thefabric-io/transactional v0.0.0-20240115014503-430513e45120/go.mod h1:clJw5yzt7og81WvJjtxsPyNWJ69glUQ1oXYRPU+ndeA=
+github.com/thefabric-io/transactional v1.1.0 h1:vf9yvPxZQWs7SZoqb5Y21SkGwAvWv/t17IM8/oBp2Wo=
+github.com/thefabric-io/transactional v1.1.0/go.mod h1:clJw5yzt7og81WvJjtxsPyNWJ69glUQ1oXYRPU+ndeA=
 golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 h1:0A+M6Uqn+Eje4kHMK80dtF3JCXC4ykBgQG4Fe06QRhQ=
 golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
