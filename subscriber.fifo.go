@@ -69,21 +69,36 @@ func (es *fifoSubscriber) Start(ctx context.Context) error {
 	if err := es.box.Init(ctx, initTx); err != nil {
 		fieldslog.Error(es, "error while initializing box", err)
 
+		if rbErr := initTx.Rollback(); rbErr != nil {
+			fieldslog.Error(es, "error rolling back init transaction", rbErr)
+		}
+
 		return err
 	}
 
 	if err := initTx.Commit(); err != nil {
 		fieldslog.Error(es, "error committing transaction when initialized box", err)
 
+		if rbErr := initTx.Rollback(); rbErr != nil {
+			fieldslog.Error(es, "error rolling back init transaction after commit failure", rbErr)
+		}
+
 		return err
 	}
 
 	for {
+		// Exit if context is canceled
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+
 		tx, err := es.transactional.BeginTransaction(ctx, transactional.DefaultWriteTransactionOptions())
 		if err != nil {
 			fieldslog.Error(es, "error beginning transaction", err)
 
-			es.wait(err.Error())
+			es.wait(ctx, err.Error(), es.waitTime)
 
 			continue
 		}
@@ -92,7 +107,11 @@ func (es *fifoSubscriber) Start(ctx context.Context) error {
 		if err != nil {
 			fieldslog.Error(es, "error processing messages", err)
 
-			es.wait(err.Error())
+			if rbErr := tx.Rollback(); rbErr != nil {
+				fieldslog.Error(es, "error rolling back transaction after processing failure", rbErr)
+			}
+
+			es.wait(ctx, err.Error(), es.waitTime)
 
 			continue
 		}
@@ -100,24 +119,35 @@ func (es *fifoSubscriber) Start(ctx context.Context) error {
 		if err := tx.Commit(); err != nil {
 			fieldslog.Error(es, "error committing transaction", err)
 
-			es.wait(err.Error())
+			if rbErr := tx.Rollback(); rbErr != nil {
+				fieldslog.Error(es, "error rolling back transaction after commit failure", rbErr)
+			}
+
+			es.wait(ctx, err.Error(), es.waitTime)
 
 			continue
 		}
 
 		// If no messages are retrieved, wait for the specified duration
 		if messageRetrieved == 0 {
-			time.Sleep(es.waitTime)
+			es.wait(ctx, "", es.waitTime)
 		} else {
-			time.Sleep(es.waitTimeIfMessages)
+			es.wait(ctx, "", es.waitTimeIfMessages)
 		}
 	}
 }
 
-func (es *fifoSubscriber) wait(cause string) {
-	fieldslog.Info(es, cause)
+func (es *fifoSubscriber) wait(ctx context.Context, cause string, d time.Duration) {
+	if cause != "" {
+		fieldslog.Info(es, cause)
+	}
 
-	time.Sleep(es.waitTime)
+	select {
+	case <-ctx.Done():
+		return
+	case <-time.After(d):
+		return
+	}
 }
 
 func (es *fifoSubscriber) processMessages(ctx context.Context, tx transactional.Transaction) (int, error) {
